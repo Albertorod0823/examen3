@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Number guessing game</title>
+
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      }
+      
+      .form input[type="number"] {
+        width: 200px;
+      }
+
+      .lastResult {
+        color: white;
+        padding: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Juego de adivinar el numero</h1>
+
+    <p>Hemos seleccionado un numero aleatorio entre 1 y 100. Intenta adivinarlo en 10 intentos o menos. Te diremos si el numero es mayor o menor.</p>
+
+    <div class="form">
+      <label for="guessField">Introduce tu intento: </label>
+      <input type="number" min="1" max="100" required id="guessField" class="guessField">
+      <input type="submit" value="Enviar intento" class="guessSubmit">
+    </div>
+
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
+
+    <script>
+
+        // Se establecen las variables a usar
+        let randomNumber = Math.floor(Math.random() * 100) + 1; //El numero por adivinar
+
+        // Aqui se hace referencia a los elementos de html
+        const guesses = document.querySelector(".guesses"); // Los intentos
+        const lastResult = document.querySelector(".lastResult"); // El intento previo para imprimir
+        const lowOrHi = document.querySelector(".lowOrHi"); // Si el numero es mayor o menor
+
+        // Se establece vinculo entre los formatos de html y JavaScript
+        const guessSubmit = document.querySelector(".guessSubmit"); // El boton
+        const guessField = document.querySelector(".guessField"); // El area de llenado
+
+        // Para los intentos del usuario
+        let guessCount = 1; // El numero inicial de intentos, se resetea 
+        let resetButton; // Para resetear los intentos
+
+        // Se crea una funcion para verificar el intento
+        function checkGuess() { // Es la funcion con su nombre
+            let userGuess = Number(guessField.value); // Se lee el form para sacar el numero del usuario
+            if (guessCount === 1) { // Condicional para saber que escribir en los intentos anteriores
+                guesses.textContent = "Intentos anteriores: "; // En caso de ser el primer intento, no se concatena ningun otro texto
+            }
+
+            guesses.textContent += userGuess + " "; // Se concatena el intento del usuario para mostrar intentos previos y un espacio
+
+            if (userGuess === randomNumber) { // Condicional para saber si lo adivino
+                lastResult.textContent = "¡Felicidades! ¡Lo adivinaste!"; // Se manda un mensaje de felicitationes en caso de acertar
+                lastResult.style.backgroundColor = "green"; // Se cambia el color a verde
+                lowOrHi.textContent = ""; // Se omite el mensaje de mayor a menor
+                setGameOver(); // Se acaba el juego, llamando a otra funcion
+                } else if (guessCount === 10) { // Condicional, se busca que sea igual a 10
+                lastResult.textContent = "¡¡¡Fin del juego!!!"; // Mensaje de fin de juego
+                setGameOver(); // Se acaba el juego, llamando a otra funcion
+                    } else { // En caso de no ser 10 y se saco mal
+                        lastResult.textContent = "¡Incorrecto!"; // Se manda un mensaje de incorreto
+                        lastResult.style.backgroundColor = "red"; // Se cambia el color a rojo
+                            if (userGuess < randomNumber) { // Condicional para saber si el numero es menor
+                            lowOrHi.textContent = "¡El número es muy bajo!"; //  Se da un texto diciendo que es muy chico
+                                } else if (userGuess > randomNumber) { // Condicional para saber si el numero es mayor
+                                lowOrHi.textContent = "¡El número es muy grande!"; // Se da un texto diciendo que es mayor
+                                }
+                    }
+
+            guessCount++; // Se le agrega uno al numero de intentos 
+            guessField.value = ""; // Se borra el contenido del form para la introduccion de numeros
+            guessField.focus(); // Se enfoca en el form de introduccion de numeros
+        }
+
+        // Se agrega un evento, el cual llama a la funcion mediante un click
+        guessSubmit.addEventListener("click", checkGuess); 
+
+        // Se agrega una funcion para terminar el juego
+        function setGameOver() { // Se crea la funcion
+            guessField.disabled = true; // Se deshabilita el form para colocar numeros
+            guessSubmit.disabled = true; // Se deshabilita el form para enviar numeros
+            resetButton = document.createElement("button"); // Se crea un boton para resetear el juego, solamente la informacion del boton
+            resetButton.textContent = "Iniciar nuevo juego"; // Se le da texto al boton
+            document.body.append(resetButton); // Se crea el boton para resetear el juego, de forma fisica en html
+            resetButton.addEventListener("click", resetGame); // Se le agrega un evento al boton para llama a la funcion de reseteo
+        }
+
+        // Se agrega la funcion para resetear el juego
+        function resetGame() { // Se crea la funcion
+          guessCount = 1; // Se devuelve el numero de intentos a 1
+
+          const resetParas = document.querySelectorAll(".resultParas p"); // Se crea una lista de todos los elementos p de la clase resultParas
+          for (let i = 0; i < resetParas.length; i++) { // Se establece un ciclo para poder ciclar cada uno de los elementos p
+            resetParas[i].textContent = ""; // Se borra el contenido de dichos elementos
+          }
+
+          resetButton.parentNode.removeChild(resetButton); // Elimina el boton para resetear el juego
+
+          guessField.disabled = false; // Se habilita el form para adivinar
+          guessSubmit.disabled = false; // Se habilita el boton para enviar
+          guessField.value = ""; // Se borra el numero
+          guessField.focus(); // Se vuelve a enfocar el form de ingresar numero
+
+          lastResult.style.backgroundColor = "white"; // Se deja el color en blanco
+
+          randomNumber = Math.floor(Math.random() * 100) + 1; // Se vuelve a elegir un numero al azar
+        }
+
+    </script>
+  </body>
+</html>
